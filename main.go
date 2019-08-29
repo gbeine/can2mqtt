@@ -25,6 +25,8 @@ var can2mqttPairs []can2mqtt           // representation of can2mqtt.csv
 var dbg bool = false                   // verbose on of [-v]
 var ci string = "can0"                 // the CAN-Interface [-c]
 var cs string = "tcp://localhost:1883" // mqtt-connectstring [-m]
+var user string = "can2mqtt"           // mqtt-user [-u]
+var password string = "can2mqtt"       // mqtt-password [-p]
 var c2mf string = "can2mqtt.csv"       // path to the can2mqtt.csv [-f]
 var conf bool = true                   // represents wether a running conf
 // is set or not
@@ -54,6 +56,16 @@ func SetCs(s string) {
 	cs = s
 }
 
+// SetCuser sets the MQTT user. Default is: can2mqtt
+func SetCuser(u string) {
+	user = u
+}
+
+// SetCpassword sets the MQTT password. Default is: can2mqtt
+func SetCpassword(p string) {
+	password = p
+}
+
 // Start is the function that should be called after debug-level
 // connectstring, can interface and can2mqtt file have been set.
 // Start takes care of everything that happens after that.
@@ -63,7 +75,7 @@ func SetCs(s string) {
 func Start() {
 	wg.Add(1)
 	go canStart(ci) // epic parallel shit ;-)
-	mqttStart(cs)
+	mqttStart(cs, user, password)
 	readC2MPFromFile(c2mf)
 	wg.Wait()
 }
@@ -94,7 +106,7 @@ func readC2MPFromFile(filename string) {
 	}
 	if dbg {
 		fmt.Printf("main: the following CAN-MQTT pairs have been extracted:\n")
-		fmt.Printf("main: CAN-ID\t\t conversion mode\t\tMQTT-topic")
+		fmt.Printf("main: CAN-ID\t\t conversion mode\t\tMQTT-topic\n")
 		for _, c2mp := range can2mqttPairs {
 			fmt.Printf("main: %d\t\t%s\t\t%s\n", c2mp.canId, c2mp.convMethod, c2mp.mqttTopic)
 		}

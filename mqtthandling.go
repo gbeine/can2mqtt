@@ -9,9 +9,11 @@ var client MQTT.Client
 
 // uses the connectString to establish a connection to the MQTT
 // broker
-func mqttStart(connectString string) {
+func mqttStart(connectString string, user string, password string) {
 	clientsettings := MQTT.NewClientOptions().AddBroker(connectString)
 	clientsettings.SetClientID("CAN2MQTT")
+	clientsettings.SetUsername(user)
+	clientsettings.SetPassword(password)
 	clientsettings.SetDefaultPublishHandler(handleMQTT)
 	client = MQTT.NewClient(clientsettings)
 	if dbg {
